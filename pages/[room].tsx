@@ -1,5 +1,8 @@
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { useRouter } from "next/router";
+import Head from "next/head";
+
 import supabase from "../lib/supabase";
 
 import JSConfetti from 'js-confetti'
@@ -94,7 +97,11 @@ export default function Room() {
 
   return (
     <div className="bg-gray-900">
-      <div className="h-screen mx-auto max-w-md grid gap-6 py-16">
+      <Head>
+        <title>autopoll - {`${room}`}</title>
+      </Head>
+
+      <div className="h-screen mx-auto max-w-md grid gap-6 py-16 grid-rows-2">
         <div className="grid bg-black/50 rounded-lg relative pb-1">
           <div className="grid bg-emerald-900 rounded-lg">
             <input
