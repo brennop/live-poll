@@ -11,7 +11,6 @@ const Home: NextPage = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { value } = inputRef.current;
-    // change route to /room
     router.push(`/${value}`);
   };
   return (

@@ -1,32 +1,38 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
 import { useRouter } from "next/router";
 import Head from "next/head";
+import JSConfetti from "js-confetti";
+import * as _ from "lodash-es";
 
 import supabase from "../lib/supabase";
 
-import JSConfetti from 'js-confetti'
+const COOLDOWN = 500;
 
-const Reaction = ({ emojis, onSend }: {
-  emojis: string[],
-  onSend: (emojis: string[]) => void
+const Reaction = ({
+  emojis,
+  onSend,
+}: {
+  emojis: string[];
+  onSend: (emojis: string[]) => void;
 }) => {
   const [emoji] = emojis;
 
-  return <button
-    onClick={() => onSend(emojis)}
-    className="bg-gray-800 text-gray-100 rounded-lg px-4 py-2">
-    {emoji}
-  </button>
-}
-
+  return (
+    <button
+      onClick={() => onSend(emojis)}
+      className="bg-gray-800 text-gray-100 rounded-lg px-4 py-2 text-xl"
+    >
+      {emoji}
+    </button>
+  );
+};
 
 export default function Room() {
   const { room } = useRouter().query;
 
   const confetti = useMemo(() => {
-    if (typeof window !== 'undefined') {
-      return new JSConfetti()
+    if (typeof window !== "undefined") {
+      return new JSConfetti();
     }
   }, []);
 
@@ -65,18 +71,20 @@ export default function Room() {
     };
   }, [channel]);
 
-  const addConfetti = useCallback((emojis: string[]) => {
-    confetti?.addConfetti({
-      emojis: emojis,
-      confettiNumber: 1,
-    })
-  }, [confetti])
-
+  const addConfetti = useCallback(
+    (emojis: string[]) => {
+      confetti?.addConfetti({
+        emojis: emojis,
+        confettiNumber: 1,
+      });
+    },
+    [confetti]
+  );
 
   useEffect(() => {
     const handleReaction = ({ payload }: any) => {
       addConfetti(payload);
-    }
+    };
 
     channel.on("broadcast", { event: "reaction" }, handleReaction);
 
@@ -90,10 +98,14 @@ export default function Room() {
     channel.track({ data: { vote: value } });
   };
 
-  const sendEmoji = (emojis: string[]) => {
-    channel.send({ type: "broadcast", event: "reaction", payload: emojis });
-    addConfetti(emojis);
-  };
+  const sendEmoji = useMemo(
+    () =>
+      _.throttle((emojis: string[]) => {
+        channel.send({ type: "broadcast", event: "reaction", payload: emojis });
+        addConfetti(emojis);
+      }, COOLDOWN),
+    [channel, addConfetti]
+  );
 
   return (
     <div className="bg-gray-900">
@@ -101,7 +113,7 @@ export default function Room() {
         <title>autopoll - {`${room}`}</title>
       </Head>
 
-      <div className="h-screen mx-auto max-w-md grid gap-6 py-16 grid-rows-2">
+      <div className="h-screen px-6 mx-auto max-w-md grid gap-6 py-16 grid-rows-2">
         <div className="grid bg-black/50 rounded-lg relative pb-1">
           <div className="grid bg-emerald-900 rounded-lg">
             <input
@@ -158,7 +170,7 @@ export default function Room() {
           </div>
         </div>
 
-        <div className="flex gap-2 items-start justify-around">
+        <div className="flex gap-2 items-start justify-around flex-wrap">
           <Reaction emojis={["🤮", "🤢"]} onSend={sendEmoji} />
           <Reaction emojis={["🙅‍♂️", "🙅‍♀️"]} onSend={sendEmoji} />
           <Reaction emojis={["🍑"]} onSend={sendEmoji} />
