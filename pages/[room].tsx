@@ -29,6 +29,11 @@ const Reaction = ({
 
 export default function Room() {
   const { room } = useRouter().query;
+  const audio = useMemo(() => {
+    if (typeof window !== "undefined") {
+      return new Audio("/click.wav")
+    }
+  }, []);
 
   const confetti = useMemo(() => {
     if (typeof window !== "undefined") {
@@ -96,6 +101,8 @@ export default function Room() {
   const handleVote = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     channel.track({ data: { vote: value } });
+
+    audio?.play();
   };
 
   const sendEmoji = useMemo(
@@ -110,7 +117,7 @@ export default function Room() {
   return (
     <div className="bg-gray-900">
       <Head>
-        <title>autopoll - {`${room}`}</title>
+        <title>{`autopoll - ${room}`}</title>
       </Head>
 
       <div className="h-screen px-6 mx-auto max-w-md grid gap-6 py-16 grid-rows-2">
