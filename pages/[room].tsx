@@ -46,7 +46,8 @@ export default function Room() {
   };
 
   return (
-    <div className="h-screen w-screen grid grid-cols-1 gap-6 p-8 bg-gray-900 sm:grid-cols-2">
+    <div className="bg-gray-900">
+      <div className="h-screen mx-auto max-w-md grid gap-6 py-16">
       <div className="grid bg-black/50 rounded-lg relative pb-1">
         <div className="grid bg-emerald-900 rounded-lg">
           <input
@@ -56,7 +57,7 @@ export default function Room() {
             onChange={handleVote}
             className="hidden peer"
             id="yes"
-          />
+            />
           <label
             className="-translate-y-4 peer-checked:-translate-y-1 transition-all ease-in-out duration-150 peer-checked:bg-emerald-600 bg-emerald-500 rounded-lg grid place-items-center cursor-pointer relative border-emerald-300 border-2"
             htmlFor="yes"
@@ -79,7 +80,7 @@ export default function Room() {
             onChange={handleVote}
             className="hidden peer"
             id="no"
-          />
+            />
           <label
             className="-translate-y-4 peer-checked:-translate-y-1 transition-all ease-in-out duration-150 peer-checked:bg-rose-600 bg-rose-500 rounded-lg grid place-items-center cursor-pointer relative border-rose-400 border-2"
             htmlFor="no"
@@ -93,5 +94,5 @@ export default function Room() {
         </div>
       </div>
     </div>
-  );
+    </div>  );
 }
