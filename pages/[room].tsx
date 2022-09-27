@@ -2,8 +2,6 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import supabase from "../lib/supabase";
 
-import { RadioGroup } from "@headlessui/react";
-
 export default function Room() {
   const { room } = useRouter().query;
 
@@ -48,7 +46,7 @@ export default function Room() {
   };
 
   return (
-    <div className="h-screen w-screen grid grid-cols-1 gap-4 p-6 bg-gray-900 sm:grid-cols-2">
+    <div className="h-screen w-screen grid grid-cols-1 gap-6 p-8 bg-gray-900 sm:grid-cols-2">
       <div className="grid bg-black/50 rounded-lg relative pb-1">
         <div className="grid bg-emerald-900 rounded-lg">
           <input
@@ -60,13 +58,13 @@ export default function Room() {
             id="yes"
           />
           <label
-            className="-translate-y-3 peer-checked:-translate-y-1 transition-all ease-in-out duration-150 peer-checked:bg-emerald-400 bg-emerald-500 rounded-lg grid place-items-center cursor-pointer relative border-emerald-300 border-2"
+            className="-translate-y-4 peer-checked:-translate-y-1 transition-all ease-in-out duration-150 peer-checked:bg-emerald-600 bg-emerald-500 rounded-lg grid place-items-center cursor-pointer relative border-emerald-300 border-2"
             htmlFor="yes"
           >
             <div style={{ height: `${yesVotes * 100}%` }} className="h-full w-full bottom-0 rounded-lg absolute bg-black/10 transition-all -z-10" />
             <div className="text-center">
-              <p className="text-5xl text-gray-100">Yes 👍</p>
-              <p className="text-3xl text-white m-2">{yesVotes * 100}%</p>
+              <p className="text-5xl text-emerald-100">Yes 👍</p>
+              <p className="text-2xl text-emerald-100">{(yesVotes * 100).toFixed(0)}%</p>
             </div>
           </label>
         </div>
@@ -83,13 +81,13 @@ export default function Room() {
             id="no"
           />
           <label
-            className="-translate-y-3 peer-checked:-translate-y-1 transition-all ease-in-out duration-150 peer-checked:bg-rose-500 bg-rose-600 rounded-lg grid place-items-center cursor-pointer relative border-rose-400 border-2"
+            className="-translate-y-4 peer-checked:-translate-y-1 transition-all ease-in-out duration-150 peer-checked:bg-rose-600 bg-rose-500 rounded-lg grid place-items-center cursor-pointer relative border-rose-400 border-2"
             htmlFor="no"
           >
             <div style={{ height: `${noVotes * 100}%` }} className="h-full w-full bottom-0 rounded-lg absolute bg-black/10 transition-all -z-10" />
             <div className="text-center">
-              <p className="text-5xl text-gray-100">No 👎</p>
-              <p className="text-3xl text-white m-2">{noVotes * 100}%</p>
+              <p className="text-5xl text-rose-100">No 👎</p>
+              <p className="text-2xl text-rose-100">{(noVotes * 100).toFixed(0)}%</p>
             </div>
           </label>
         </div>
