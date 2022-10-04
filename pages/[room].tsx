@@ -21,6 +21,7 @@ const Reaction = ({
     <button
       onClick={() => onSend(emojis)}
       className="bg-gray-800 text-gray-100 rounded-lg px-4 py-2 text-xl"
+      type="button"
     >
       {emoji}
     </button>
@@ -61,12 +62,12 @@ export default function Room() {
     [state]
   );
 
-  useEffect(() => {
-    const handlePresence = () => {
-      const presence = channel.presenceState();
-      setState(Object.values(presence).map((item) => item.at(0)?.data?.vote));
-    };
+  const handlePresence = useCallback(() => {
+    const presence = channel.presenceState();
+    setState(Object.values(presence).map((item) => item.at(0)?.data?.vote));
+  }, [channel]);
 
+  useEffect(() => {
     channel
       .on("presence", { event: "sync" }, handlePresence)
       .on("presence", { event: "leave" }, handlePresence);
@@ -74,7 +75,7 @@ export default function Room() {
     return () => {
       channel.off("presence", handlePresence);
     };
-  }, [channel]);
+  }, [channel, handlePresence]);
 
   const addConfetti = useCallback(
     (emojis: string[]) => {
@@ -98,11 +99,32 @@ export default function Room() {
     };
   }, [channel, addConfetti]);
 
+  useEffect(() => {
+    const handleReset = () => {
+      channel.untrack({ data: {} });
+    };
+
+    channel.on("broadcast", { event: "reset" }, handleReset);
+
+    return () => {
+      channel.off("broadcast", handleReset);
+    };
+  }, [channel, addConfetti]);
+
   const handleVote = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     channel.track({ data: { vote: value } });
 
+    channel.presence.state
+
     audio?.play();
+  };
+
+  const handleReset = () => {
+    channel.untrack({ data: {} }).then(() => {
+      channel.send({ type: "broadcast", event: "reset" });
+      setState([]);
+    });
   };
 
   const sendEmoji = useMemo(
@@ -120,8 +142,21 @@ export default function Room() {
         <title>{`autopoll - ${room}`}</title>
       </Head>
 
-      <div className="h-screen px-6 mx-auto max-w-md grid gap-6 py-16 grid-rows-2">
+      <form className="h-screen px-6 mx-auto max-w-md flex flex-col gap-6 py-16">
         <div className="grid bg-black/50 rounded-lg relative pb-1">
+          <button className="grid bg-orange-900 rounded-lg group"
+            type="reset"
+            onClick={handleReset}>
+            <div
+              className="-translate-y-4 group-active:-translate-y-1 transition-all ease-in-out duration-150 peer-checked:bg-orange-600 bg-orange-500 rounded-lg grid place-items-center cursor-pointer relative border-orange-300 border-2"
+            >
+              <p className="text-3xl text-orange-100">Reset</p>
+            </div>
+          </button>
+        </div>
+
+
+        <div className="grid bg-black/50 rounded-lg relative pb-1 flex-1">
           <div className="grid bg-emerald-900 rounded-lg">
             <input
               type="radio"
@@ -149,7 +184,7 @@ export default function Room() {
           </div>
         </div>
 
-        <div className="grid bg-black/50 rounded-lg relative pb-1">
+        <div className="grid bg-black/50 rounded-lg relative pb-1 flex-1">
           <div className="grid bg-rose-900 rounded-lg relative">
             <input
               type="radio"
@@ -185,7 +220,7 @@ export default function Room() {
           <Reaction emojis={["🤓"]} onSend={sendEmoji} />
           <Reaction emojis={["🧓", "👵"]} onSend={sendEmoji} />
         </div>
-      </div>
+      </form>
     </div>
   );
 }
